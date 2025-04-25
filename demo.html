@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Maze Escape Game</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: brown;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    #maze {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      grid-template-rows: repeat(10, 40px);
+      gap: 2px;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+    }
+
+    .wall {
+      background-color: #444;
+    }
+
+    .player {
+      background-color: #87cefa;
+    }
+
+    .goal {
+      background-color: #90ee90;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 20px;
+      color: yellow;
+      text-shadow: 1px 1px 3px black;
+    }
+
+    /* Background video styling */
+    video#bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏃 Maze Escape Game 🏁</h1>
+
+  <!-- Background video -->
+  <video id="bg-video" autoplay loop muted>
+    <source src="vid.mp4" type="video/mp4">
+    Your browser does not support video.
+  </video>
+
+  <!-- Background audio -->
+  <audio autoplay loop>
+    <source src="aud.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="maze"></div>
+  <div id="message"></div>
+
+  <script>
+    const maze = [
+      [1, 0, 0, 1, 0, 0, 0, 0, 0, 3],
+      [1, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+      [0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+      [0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+      [1, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 1, 0, 1, 0, 1, 1, 1],
+      [1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ];
+
+    let playerPos = { row: 0, col: 0 };
+    const mazeContainer = document.getElementById("maze");
+    const message = document.getElementById("message");
+
+    function drawMaze() {
+      mazeContainer.innerHTML = '';
+      for (let r = 0; r < maze.length; r++) {
+        for (let c = 0; c < maze[0].length; c++) {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          if (maze[r][c] === 1) cell.classList.add('wall');
+          if (maze[r][c] === 3) cell.classList.add('goal');
+          if (r === playerPos.row && c === playerPos.col) {
+            cell.classList.add('player');
+            cell.textContent = '🧍';
+          }
+          mazeContainer.appendChild(cell);
+        }
+      }
+    }
+
+    function movePlayer(dr, dc) {
+      const newRow = playerPos.row + dr;
+      const newCol = playerPos.col + dc;
+
+      if (
+        newRow >= 0 && newRow < maze.length &&
+        newCol >= 0 && newCol < maze[0].length &&
+        maze[newRow][newCol] !== 1
+      ) {
+        playerPos.row = newRow;
+        playerPos.col = newCol;
+        drawMaze();
+
+        if (maze[newRow][newCol] === 3) {
+          message.textContent = "🎉 You Escaped the Maze!";
+        }
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'ArrowUp': movePlayer(-1, 0); break;
+        case 'ArrowDown': movePlayer(1, 0); break;
+        case 'ArrowLeft': movePlayer(0, -1); break;
+        case 'ArrowRight': movePlayer(0, 1); break;
+      }
+    });
+
+    drawMaze();
+  </script>
+</body>
+</html>
